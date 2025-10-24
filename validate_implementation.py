@@ -14,18 +14,19 @@ def validate_implementation():
     print("VALIDATING MODULAR AGENT GPT INTEGRATION")
     print("="*70)
     
+    # Import components first (outside mocking context)
+    from modular_agent_gpt import (
+        ModularAgent, CognitiveEngine, ActionExecutor, 
+        FeedbackEvaluator, MemoryKB, StrategyAdapter, MetaCognitiveLayer,
+        InputHandler, query_openai
+    )
+    
     # Mock the OpenAI client for validation
     with patch('modular_agent_gpt.client') as mock_client:
         mock_response = MagicMock()
         mock_response.choices = [MagicMock()]
         mock_response.choices[0].message.content = "This is a test GPT response."
         mock_client.chat.completions.create.return_value = mock_response
-        
-        from modular_agent_gpt import (
-            ModularAgent, CognitiveEngine, ActionExecutor, 
-            FeedbackEvaluator, MemoryKB, StrategyAdapter, MetaCognitiveLayer,
-            InputHandler, query_openai
-        )
         
         print("\n✓ All components imported successfully")
         
