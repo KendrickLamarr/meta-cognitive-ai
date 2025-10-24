@@ -21,8 +21,14 @@ from openai import OpenAI
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("ModularAgent")
 
-# Initialize OpenAI client
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+# Initialize OpenAI client (only if API key is available)
+_api_key = os.environ.get("OPENAI_API_KEY")
+if _api_key:
+    client = OpenAI(api_key=_api_key)
+else:
+    # Create a placeholder that will raise an error if used
+    client = None
+    logger.warning("[OpenAI] No API key found in OPENAI_API_KEY environment variable")
 
 # -------------------- Data Classes --------------------
 
@@ -124,6 +130,11 @@ def query_openai(
     Returns:
         Tuple of (response_text, success_flag)
     """
+    if client is None:
+        error_msg = "Error: OpenAI client not initialized. Please set OPENAI_API_KEY environment variable."
+        logger.error("[OpenAI] %s", error_msg)
+        return error_msg, False
+    
     try:
         response = client.chat.completions.create(
             model=model,
